@@ -63,11 +63,14 @@ class Engine {
 			throw new \RuntimeException("Attempting to use generics with non-generic class");
 		}
 
+
+
 		$generator = new Generator($ast->getAttribute("generics"), $types);
 		$traverser = new NodeTraverser;
 		$traverser->addVisitor($generator);
 		$ast = $traverser->traverse([$ast]);
 		$ast[0]->name = array_pop($orig_parts);
+		$ast[0]->extends = new Node\Name\FullyQualified($real_class_parts);
 		array_unshift($ast, new Node\Stmt\Namespace_(new Node\Name($orig_parts)));
 		return $this->prettyPrinter->prettyPrint($ast);
 	}

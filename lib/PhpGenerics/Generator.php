@@ -47,8 +47,8 @@ class Generator implements NodeVisitor {
     		var_dump($node->returnType);
     		die();
     	} elseif ($node instanceof Node\Param) {
-    		if ($node->hasAttribute("generic_type")) {
-	    		$type = $node->getAttribute("generic_type");
+    		if ($node->hasAttribute("generic_name")) {
+	    		$type = $node->getAttribute("generic_name");
 	    		if (isset($this->genericTypes[$type])) {
 	    			$node->type = new Node\Name\FullyQualified($this->genericTypes[$type]);
 	    		} else {
@@ -65,6 +65,9 @@ class Generator implements NodeVisitor {
 	    			}
 	    		}
 	    		$node->type = new Node\Name\FullyQualified($type);
+	    	} elseif (((string) $node->name) == "item") {
+	    		var_dump($node);
+	    		die();
 	    	}
     	}
     }
