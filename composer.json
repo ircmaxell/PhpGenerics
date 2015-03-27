@@ -1,0 +1,22 @@
+{
+    "name": "ircmaxell/generics",
+    "description": "A generics preprocessor library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Anthony Ferrara",
+            "email": "ircmaxell@gmail.com"
+        }
+    ],
+	"autoload": {
+		"psr-4": {
+			"PhpGenerics\\": "lib/PhpGenerics/"
+		},
+		"files": [
+			"lib/bootstrap.php"
+		]
+	},
+    "require": {
+        "nikic/php-parser": "1.2.*@dev"
+    }
+}
