@@ -7,6 +7,7 @@ Example:
 
 Test/Item.php
 
+```php
 	namespace test;
 
 	class Item<T> {
@@ -23,9 +24,11 @@ Test/Item.php
 			$this->item = $item;
 	    }
 	}
+```
 
 Test/Test.php
 
+```php
     namespace Test;
 
     class Test {
@@ -36,13 +39,15 @@ Test/Test.php
             // $item->setItem([]); // E_RECOVERABLE_ERROR
         }
     }
-
+```
 test.php
 
+```php
     require "vendor/autoload.php";
 
     $test = new Test\Test;
     $test->runTest();
+```
 
 ## HOW???
 
@@ -54,9 +59,11 @@ Right now, only class definitions can define generics, and any parameter or retu
 
 It also supports parameter-expansion:
 
+```php
     class Foo<T>
         public function bar(): Foo<T> {}
     }
+```
 
 As far as the rest, I don't know.
 
@@ -87,15 +94,15 @@ Fine. Your loss.
 I hijack the composer autoloader, and substitute my own. I then pre-process all autoloaded files, transpiling them to eliminate generics from declarations. I also compile usages from generic syntax to namespace syntax (compiling the types as we go along).
 
 So:
-
+```php
     new Item<StdClass>
-
+```
 Becomes
-
+```php
     new Item\①StdClass①
-
+```
 Then, the autoloader recognizes attempts to load these classes and will generate the templated code... The above 2 blocks of code will be compiled to:
-
+```php
 	class test
 	{
 	    public function runTests()
@@ -105,9 +112,9 @@ Then, the autoloader recognizes attempts to load these classes and will generate
 	        $itemList->addItem($item);
 	    }
 	}
-
+```
 And:
-
+```php
 	namespace test\Item;
 
 	class ①StdClass① extends \test\Item
@@ -126,7 +133,7 @@ And:
 	        $this->item = $item;
 	    }
 	}
-
+```
 ## TL/DR
 
 TL/DR: don't use this
