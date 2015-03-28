@@ -8,14 +8,14 @@
             "email": "ircmaxell@gmail.com"
         }
     ],
-	"autoload": {
-		"psr-4": {
-			"PhpGenerics\\": "lib/PhpGenerics/"
-		},
-		"files": [
-			"lib/bootstrap.php"
-		]
-	},
+    "autoload": {
+        "psr-4": {
+            "PhpGenerics\\": "lib/PhpGenerics/"
+        },
+        "files": [
+            "lib/bootstrap.php"
+        ]
+    },
     "require": {
         "nikic/php-parser": "1.2.*@dev"
     }
