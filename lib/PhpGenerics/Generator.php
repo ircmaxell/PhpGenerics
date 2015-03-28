@@ -5,18 +5,18 @@ namespace PhpGenerics;
 use PhpParser\NodeVisitor;
 use PhpParser\Node;
 
-class Generator implements NodeVisitor {	
+class Generator implements NodeVisitor {    
 
-	protected $genericTypes = [];
+    protected $genericTypes = [];
 
-	public function __construct(array $names, array $types) {
-		if (count($names) != count($types)) {
-			throw new \RuntimeException("Generic type count mismatch");
-		}
-		$this->genericTypes = array_combine($names, $types);
-	}
+    public function __construct(array $names, array $types) {
+        if (count($names) != count($types)) {
+            throw new \RuntimeException("Generic type count mismatch");
+        }
+        $this->genericTypes = array_combine($names, $types);
+    }
 
-	/**
+    /**
      * Called once before traversal.
      *
      * Return value semantics:
@@ -43,33 +43,33 @@ class Generator implements NodeVisitor {
      * @return null|Node Node
      */
     public function enterNode(Node $node) {
-    	if (isset($node->returnType)) {
-    		var_dump($node->returnType);
-    		die();
-    	} elseif ($node instanceof Node\Param) {
-    		if ($node->hasAttribute("generic_name")) {
-	    		$type = $node->getAttribute("generic_name");
-	    		if (isset($this->genericTypes[$type])) {
-	    			$node->type = new Node\Name\FullyQualified($this->genericTypes[$type]);
-	    		} else {
-	    			throw new \LogicException("Bad generic found");
-	    		}
-	    	} elseif ($node->type instanceof Node\Name && $node->type->hasAttribute("generics") && $node->type->getAttribute("generics")) {
-	    		$type = $node->getAttribute("original_type")->parts;
-	    		foreach ($node->type->getAttribute("generics") as $generic) {
-	    			if (isset($this->genericTypes[$generic])) {
-	    				$value =  str_replace("\\", Engine::NS_TOKEN, $this->genericTypes[$generic]);
-	    				$type[] = Engine::CLASS_TOKEN . $value . Engine::CLASS_TOKEN;
-	    			} else {
-	    				throw new \LogicException("Bad generic found");
-	    			}
-	    		}
-	    		$node->type = new Node\Name\FullyQualified($type);
-	    	} elseif (((string) $node->name) == "item") {
-	    		var_dump($node);
-	    		die();
-	    	}
-    	}
+        if (isset($node->returnType)) {
+            var_dump($node->returnType);
+            die();
+        } elseif ($node instanceof Node\Param) {
+            if ($node->hasAttribute("generic_name")) {
+                $type = $node->getAttribute("generic_name");
+                if (isset($this->genericTypes[$type])) {
+                    $node->type = new Node\Name\FullyQualified($this->genericTypes[$type]);
+                } else {
+                    throw new \LogicException("Bad generic found");
+                }
+            } elseif ($node->type instanceof Node\Name && $node->type->hasAttribute("generics") && $node->type->getAttribute("generics")) {
+                $type = $node->getAttribute("original_type")->parts;
+                foreach ($node->type->getAttribute("generics") as $generic) {
+                    if (isset($this->genericTypes[$generic])) {
+                        $value =  str_replace("\\", Engine::NS_TOKEN, $this->genericTypes[$generic]);
+                        $type[] = Engine::CLASS_TOKEN . $value . Engine::CLASS_TOKEN;
+                    } else {
+                        throw new \LogicException("Bad generic found");
+                    }
+                }
+                $node->type = new Node\Name\FullyQualified($type);
+            } elseif (((string) $node->name) == "item") {
+                var_dump($node);
+                die();
+            }
+        }
     }
 
     /**

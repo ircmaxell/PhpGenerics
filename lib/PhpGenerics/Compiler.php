@@ -5,24 +5,24 @@ namespace PhpGenerics;
 use PhpParser\NodeVisitor;
 use PhpParser\Node;
 
-class Compiler implements NodeVisitor {	
+class Compiler implements NodeVisitor { 
 
-	protected $currentGenerics = [];
+    protected $currentGenerics = [];
 
-	protected $classes = [];
-	
-	public function getClass($class) {
-		if (isset($this->classes[$class])) {
-			return $this->classes[$class];
-		}
-		return null;
-	}
+    protected $classes = [];
+    
+    public function getClass($class) {
+        if (isset($this->classes[$class])) {
+            return $this->classes[$class];
+        }
+        return null;
+    }
 
-	public function getClasses() {
-		return $this->classes;
-	}
+    public function getClasses() {
+        return $this->classes;
+    }
 
-	/**
+    /**
      * Called once before traversal.
      *
      * Return value semantics:
@@ -49,50 +49,50 @@ class Compiler implements NodeVisitor {
      * @return null|Node Node
      */
     public function enterNode(Node $node) {
-    	switch ($node->getType()) {
-    		case 'Stmt_Class':
-    			$this->classes[(string) $node->namespacedName] = $node;
-    			$this->addGenerics($node);
-    			break;
-    		case 'Param':
-    			if ($node->type) {
-    				$type = $node->type instanceof Node\Name ? $node->type->getLast() : $node->type;
-    				if ($node->type instanceof Node\Name && $node->type->hasAttribute("generics") && $node->type->getAttribute("generics")) {
-    					$node->setAttribute("generics", $node->type->getAttribute("generics"));
-						$node->setAttribute("original_type", $node->type);
-					}
-    				if (isset($this->currentGenerics[$type])) {
-    					$node->type = null;
-    					$node->setAttribute("generic_name", $type);
-    				} 
+        switch ($node->getType()) {
+            case 'Stmt_Class':
+                $this->classes[(string) $node->namespacedName] = $node;
+                $this->addGenerics($node);
+                break;
+            case 'Param':
+                if ($node->type) {
+                    $type = $node->type instanceof Node\Name ? $node->type->getLast() : $node->type;
+                    if ($node->type instanceof Node\Name && $node->type->hasAttribute("generics") && $node->type->getAttribute("generics")) {
+                        $node->setAttribute("generics", $node->type->getAttribute("generics"));
+                        $node->setAttribute("original_type", $node->type);
+                    }
+                    if (isset($this->currentGenerics[$type])) {
+                        $node->type = null;
+                        $node->setAttribute("generic_name", $type);
+                    } 
 
-    			}
-    			break;
-    		case 'Expr_New':
-    			// replace generics
-    			if (!$node->getAttribute("generics")) {
-    				break;
-    			}
-    			if ($node->class instanceof Node\Name) {
-    				foreach ($node->getAttribute("generics") as $generic) {
-    					$generic = str_replace("\\", Engine::NS_TOKEN, $generic);
-    					$node->class->append(Engine::CLASS_TOKEN . $generic . Engine::CLASS_TOKEN);
-    				}
-    			} else {
-    				// dirty hack!
-    				$node->class = $this->appendDynamicVariable($node->class, $node->getAttribute("generics"));
-    			}
-    			break;
-    		case 'Name_FullyQualified':
-    			break;
-    		default:
-    			if ($node->hasAttribute("generics") && $node->getAttribute("generics")) {
-    				throw new \RuntimeException("Not implemented yet " . $node->getType());
-    			}
-    	}
-    	if (isset($node->returnType) && version_compare(PHP_VERSION, "7.0", "<")) {
-    		unset($node->returnType);
-    	}
+                }
+                break;
+            case 'Expr_New':
+                // replace generics
+                if (!$node->getAttribute("generics")) {
+                    break;
+                }
+                if ($node->class instanceof Node\Name) {
+                    foreach ($node->getAttribute("generics") as $generic) {
+                        $generic = str_replace("\\", Engine::NS_TOKEN, $generic);
+                        $node->class->append(Engine::CLASS_TOKEN . $generic . Engine::CLASS_TOKEN);
+                    }
+                } else {
+                    // dirty hack!
+                    $node->class = $this->appendDynamicVariable($node->class, $node->getAttribute("generics"));
+                }
+                break;
+            case 'Name_FullyQualified':
+                break;
+            default:
+                if ($node->hasAttribute("generics") && $node->getAttribute("generics")) {
+                    throw new \RuntimeException("Not implemented yet " . $node->getType());
+                }
+        }
+        if (isset($node->returnType) && version_compare(PHP_VERSION, "7.0", "<")) {
+            unset($node->returnType);
+        }
     }
 
     /**
@@ -109,11 +109,11 @@ class Compiler implements NodeVisitor {
      * @return null|Node|false|Node[] Node
      */
     public function leaveNode(Node $node) {
-		switch ($node->getType()) {
-    		case 'Stmt_Class':
-    			$this->removeGenerics($node);
-    			break;
-    	}
+        switch ($node->getType()) {
+            case 'Stmt_Class':
+                $this->removeGenerics($node);
+                break;
+        }
     }
 
     /**
@@ -132,25 +132,25 @@ class Compiler implements NodeVisitor {
     }
 
     protected function appendDynamicVariable($existing, array $generics) {
-    	throw new \Exception("Not implemented");
+        throw new \Exception("Not implemented");
     }
 
     protected function addGenerics(Node $node) {
-    	if (!$node->hasAttribute('generics') || !$node->getAttribute('generics')) {
-    		return;
-    	}
-    	foreach ($node->getAttribute('generics') as $type) {
-    		$this->currentGenerics[$type] = $type;
-    	}
+        if (!$node->hasAttribute('generics') || !$node->getAttribute('generics')) {
+            return;
+        }
+        foreach ($node->getAttribute('generics') as $type) {
+            $this->currentGenerics[$type] = $type;
+        }
     }
 
-	protected function removeGenerics(Node $node) {
-    	if (!$node->hasAttribute('generics') || !$node->getAttribute('generics')) {
-    		return;
-    	}
-    	foreach ($node->getAttribute('generics') as $type) {
-    		unset($this->currentGenerics[$type]);
-    	}
+    protected function removeGenerics(Node $node) {
+        if (!$node->hasAttribute('generics') || !$node->getAttribute('generics')) {
+            return;
+        }
+        foreach ($node->getAttribute('generics') as $type) {
+            unset($this->currentGenerics[$type]);
+        }
     }
 
 }
