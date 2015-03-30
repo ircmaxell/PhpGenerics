@@ -66,7 +66,7 @@ Right now, only class definitions can define generics, and any parameter or retu
 It also supports parameter-expansion:
 
 ```php
-class Foo<T>
+class Foo<T> {
     public function bar(): Foo<T> {}
 }
 ```
