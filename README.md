@@ -145,6 +145,6 @@ class ①StdClass① extends \test\Item
     }
 }
 ```
-## TL/DR
+## TL;DR
 
-TL/DR: don't use this
+TL;DR: don't use this
